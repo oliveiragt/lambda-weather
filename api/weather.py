@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_lat_and_lon(city):
-    url = "{}?q={}&limit=1&appid={}".format(os.environ.get("OPEN_WEATHER_API_GEOCODING_URL"), city, os.environ.get("OPEN_WEATHER_API_TOKEN"))
+    url = "{}?q={}&limit=1&appid={}&units=metric".format(os.environ.get("OPEN_WEATHER_API_GEOCODING_URL"), city, os.environ.get("OPEN_WEATHER_API_TOKEN"))
 
     headers = {
         "Content-Type": "application/json"
@@ -23,12 +23,12 @@ def get_lat_and_lon(city):
         return result
 
     except requests.exceptions.HTTPError as err:
-        print(f"HTTP Error: {err}")
+        return f"HTTP Error: {err}"
     except requests.exceptions.RequestException as err:
-        print(f"Request Error: {err}")
+        return f"Request Error: {err}"
 
 def get_weather(lat, lon):
-    url = "{}?lat={}&lon={}&appid={}".format(os.environ.get("OPEN_WEATHER_API_WEATHER_URL"), lat, lon, os.environ.get("OPEN_WEATHER_API_TOKEN"))
+    url = "{}?lat={}&lon={}&appid={}&units=metric".format(os.environ.get("OPEN_WEATHER_API_WEATHER_URL"), lat, lon, os.environ.get("OPEN_WEATHER_API_TOKEN"))
 
     headers = {
         "Content-Type": "application/json"
@@ -43,14 +43,21 @@ def get_weather(lat, lon):
         return data
 
     except requests.exceptions.HTTPError as err:
-        print(f"HTTP Error: {err}")
+        return f"HTTP Error: {err}"
     except requests.exceptions.RequestException as err:
-        print(f"Request Error: {err}")
+        return f"Request Error: {err}"
 
 def get_city_weather(city):
     coordinates = get_lat_and_lon(city)
     weather = get_weather(coordinates['lat'], coordinates['lon'])
-    print(weather)
-
-
-get_city_weather("Curitiba")
+    result = {
+        "city_name": "{}".format(weather["name"]),
+        "weather": "{}".format(weather["weather"][0]["main"]),
+        "weather_description": "{}".format(weather["weather"][0]["description"]),
+        "weather_icon": "https://openweathermap.org/img/wn/{}@2x.png".format(weather["weather"][0]["icon"]),
+        "temp": "{}".format(int(weather["main"]["temp"])),
+        "temp_min": "{}".format(int(weather["main"]["temp_min"])),
+        "temp_max": "{}".format(int(weather["main"]["temp_max"])),
+        "humidity": "{}".format(weather["main"]["humidity"])
+    }
+    return result

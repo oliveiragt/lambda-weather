@@ -1,5 +1,8 @@
 
-from api.weather import weather
-def lambda_handler(event, context):
+from page import manipulate_html_file
+def lambda_handler():
     # TODO implement
-    return weather()
+
+    return manipulate_html_file(['Belford Roxo', 'Mesquita', 'Nova Iguaçu', 'Nilópolis'])
+
+lambda_handler()
