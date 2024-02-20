@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 from api.weather import get_city_weather
+from aws import upload_to_s3
+
 def manipulate_html_file(params):
     file_path = "./index.html"
     for city in params:
@@ -23,6 +25,8 @@ def manipulate_html_file(params):
             # Write the modified content back to the file
             with open(file_path, 'w') as file:
                 file.writelines(lines)
+    
+    upload_to_s3('./index.html', 'weatherbalde', 'index.html')
 
     # Read the content of the file to delete the infos after send to S3
     with open(file_path, 'r') as file:
